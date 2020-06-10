@@ -246,10 +246,13 @@ bool ofxVideoRecorder::setup(string fname, int w, int h, float fps, int sampleRa
     stringstream outputSettings;
     outputSettings
     << " -vcodec " << videoCodec
+    << " -pix_fmt yuv420p "
     << " -b " << videoBitrate
     << " -acodec " << audioCodec
     << " -ab " << audioBitrate
     << " \"" << absFilePath << "\"";
+    
+    ofLogNotice("ofxVideoRecorder") << "settings \"" << outputSettings.str() << "\" " << fname;
 
     return setupCustomOutput(w, h, fps, sampleRate, channels, outputSettings.str(), sysClockSync, silent);
 }

@@ -1,4 +1,5 @@
 
+
 *.bak
 *~
 *#
@@ -68,3 +69,5 @@ xcuserdata/
 ehthumbs.db
 Icon?
 Thumbs.db
+PkgInfo
+.tmp

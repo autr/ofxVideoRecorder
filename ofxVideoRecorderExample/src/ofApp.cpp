@@ -16,7 +16,7 @@ void ofApp::setup(){
 
     // override the default codecs if you like
     // run 'ffmpeg -codecs' to find out what your implementation supports (or -formats on some older versions)
-    vidRecorder.setVideoCodec("mpeg4");
+    vidRecorder.setVideoCodec("libx264");
     vidRecorder.setVideoBitrate("800k");
     vidRecorder.setAudioCodec("mp3");
     vidRecorder.setAudioBitrate("192k");
@@ -25,7 +25,7 @@ void ofApp::setup(){
 
 //    soundStream.listDevices();
 //    soundStream.setDeviceID(11);
-    soundStream.setup(this, 0, channels, sampleRate, 256, 4);
+    soundStream.setup(this, 0, 2, 44100, 256, 4);
 
     ofSetWindowShape(vidGrabber.getWidth(), vidGrabber.getHeight()	);
     bRecording = false;
@@ -83,8 +83,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float *input, int bufferSize, int nChannels){
-    if(bRecording)
-        vidRecorder.addAudioSamples(input, bufferSize, nChannels);
+    if(bRecording) vidRecorder.addAudioSamples(input, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------
@@ -119,7 +118,9 @@ void ofApp::keyReleased(int key){
     }
     if(key=='c'){
         bRecording = false;
+        ofLog() << "CLOSING";
         vidRecorder.close();
+        
     }
 }
 
