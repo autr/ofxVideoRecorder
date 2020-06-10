@@ -5,7 +5,7 @@ void ofApp::setup(){
     sampleRate = 44100;
     channels = 2;
 
-    ofSetFrameRate(60);
+    ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
     vidGrabber.setDesiredFrameRate(30);
     vidGrabber.initGrabber(640, 480);
@@ -23,11 +23,18 @@ void ofApp::setup(){
 
     ofAddListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
 
-//    soundStream.listDevices();
-//    soundStream.setDeviceID(11);
-    soundStream.setup(this, 0, 2, 44100, 256, 4);
+//    soundStream.printDeviceList();
+    ofSoundStreamSettings settings;
+    auto devices = soundStream.getDeviceList();
+    settings.setInDevice(devices[0]);
+    settings.setInListener(this);
+    settings.sampleRate = sampleRate;
+    settings.bufferSize = 256;
+    settings.numInputChannels = 2;
+    settings.numOutputChannels = 0;
+    soundStream.setup(settings);
 
-    ofSetWindowShape(vidGrabber.getWidth(), vidGrabber.getHeight()	);
+    ofSetWindowShape(vidGrabber.getWidth(), vidGrabber.getHeight()    );
     bRecording = false;
     ofEnableAlphaBlending();
 }
@@ -82,8 +89,8 @@ void ofApp::draw(){
 }
 
 //--------------------------------------------------------------
-void ofApp::audioIn(float *input, int bufferSize, int nChannels){
-    if(bRecording) vidRecorder.addAudioSamples(input, bufferSize, nChannels);
+void ofApp::audioIn( ofSoundBuffer & buffer ){
+    if(bRecording) vidRecorder.addAudioSamples( buffer );
 }
 
 //--------------------------------------------------------------
@@ -102,11 +109,6 @@ void ofApp::keyReleased(int key){
         bRecording = !bRecording;
         if(bRecording && !vidRecorder.isInitialized()) {
             vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels);
-//          vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, vidGrabber.getWidth(), vidGrabber.getHeight(), 30); // no audio
-//            vidRecorder.setup(fileName+ofGetTimestampString()+fileExt, 0,0,0, sampleRate, channels); // no video
-//          vidRecorder.setupCustomOutput(vidGrabber.getWidth(), vidGrabber.getHeight(), 30, sampleRate, channels, "-vcodec mpeg4 -b 1600k -acodec mp2 -ab 128k -f mpegts udp://localhost:1234"); // for custom ffmpeg output string (streaming, etc)
-
-            // Start recording
             vidRecorder.start();
         }
         else if(!bRecording && vidRecorder.isInitialized()) {

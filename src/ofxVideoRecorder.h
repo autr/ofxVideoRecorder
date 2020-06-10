@@ -67,7 +67,11 @@ public:
     void signal();
     void setPipeNonBlocking();
     bool isWriting() { return bIsWriting; }
-    void close() { bClose = true; stopThread(); signal(); }
+    void close() {
+        bClose = true;
+        stopThread();
+        signal();
+    }
     bool bNotifyError;
 private:
     ofMutex conditionMutex;
@@ -131,6 +135,7 @@ public:
 
     bool addFrame(const ofPixels &pixels);
     void addAudioSamples(float * samples, int bufferSize, int numChannels);
+    void addAudioSamples(ofSoundBuffer& buffer);
 
     void start();
     void close();
